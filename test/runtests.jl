@@ -2,5 +2,5 @@ using BoostingDecisionTrees
 using Test
 
 @testset "BoostingDecisionTrees.jl" begin
-    # Write your tests here.
+    include("test_gini_impurity.jl")
 end
