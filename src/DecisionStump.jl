@@ -3,8 +3,17 @@ using StatsBase: countmap
 # Majority label helper 
 function majority_label(y)
     counts = countmap(y)
-    labels = collect(keys(counts))
-    return labels[argmax(values(counts))]
+    max_label = nothing
+    max_count = -Inf
+
+    for (label, c) in counts
+        if c > max_count
+            max_count = c
+            max_label = label
+        end
+    end
+
+    return max_label
 end
 
 
