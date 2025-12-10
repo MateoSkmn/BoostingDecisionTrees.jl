@@ -1,8 +1,10 @@
 module BoostingDecisionTrees
 
-# Write your package code here.
-  
 using StatsBase: countmap
+
+# Write your package code here.
+include("gini_impurity.jl")
+export best_split
 
 include("DecisionStump.jl")
 
