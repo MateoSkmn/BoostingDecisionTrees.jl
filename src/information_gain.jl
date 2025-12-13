@@ -20,7 +20,7 @@ function entropy(y::Vector)
         # Probability of this class
         p = count / n
 
-        # Shannon entropy formula: -p * log2(p)
+        # Entropy formula: -p * log2(p)
         H -= p * log2(p)
     end
 
@@ -28,7 +28,8 @@ function entropy(y::Vector)
 end
 
 function information_gain(X_column::Vector, y::Vector)
-    """ Computes the information gain obtained by splitting on one feature column. 
+    """ 
+        Computes the information gain obtained by splitting on one feature column. 
         This calculates how helpful a selector is by comparing entropy of a feature before and after applying it
     """
 
