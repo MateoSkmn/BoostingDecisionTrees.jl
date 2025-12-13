@@ -23,20 +23,29 @@ Return:
 - 'best_gini': weighted gini impurity after the split
 """
 function best_split(feature, labels)
+    n = length(feature)
+    best_gini = Inf
+    best_threshold = nothing
+
+    if n == 0
+        throw(ArgumentError("best_split received empty feature array"))
+    end
+    if n != length(labels)
+        throw(DimensionMismatch("feature and labels must have same length"))
+    end
+    if n == 1
+        return best_threshold, best_gini   # no possible split with a single point
+    end
     # Sort by feature to have consecutive array
     # sortperm(x) returns array of indeces of an ordered x
     order = sortperm(feature)
     f_sorted = feature[order]
     y_sorted = labels[order]
-    n = length(feature)
 
     # Consider unique mid of two feature points as thresholds
     # Simplified version of x[i] + (x[i+1] - x[i])/2 by Carlos Guestrin (2013) p. 18
     # http://courses.cs.washington.edu/courses/cse446/13sp/slides/decision-trees-boosting-annotated.pdf
     thresholds = unique((f_sorted[1:end-1] .+ f_sorted[2:end]) ./ 2)
-
-    best_gini = Inf
-    best_threshold = nothing
 
     for t in thresholds
         # Get all indeces of features that are above/below the current threshold

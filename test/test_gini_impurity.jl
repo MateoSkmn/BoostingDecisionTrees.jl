@@ -12,4 +12,17 @@
     threshold2, gini2 = best_split(feature2, labels2)
     @test threshold2 == 1.5
     @test 0.32 <= gini2 <= 0.34
+
+    # No split possible because only one value in inputs
+    threshold3, gini3 = best_split([1], [1])
+    @test threshold3 == nothing
+    @test gini3 == Inf
+
+    @testset "Function errors" begin
+        # Empty arrays
+        @test_throws ArgumentError best_split([],[])
+
+        #Input has different lengths
+        @test_throws DimensionMismatch best_split([1], [1,2])
+    end
 end
