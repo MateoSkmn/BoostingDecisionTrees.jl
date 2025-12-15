@@ -18,6 +18,12 @@
     @test threshold3 == nothing
     @test gini3 == Inf
 
+    # gini_impurity is given empty collection
+        # happens if all data lands on one site of the split
+    threshold4, gini4 = best_split([0,0,0,0], [0,0,1,1])
+    @test threshold4 == 0
+    @test gini4 == 0.5 # Everything is on the same branch
+
     @testset "Function errors" begin
         # Empty arrays
         @test_throws ArgumentError best_split([],[])
