@@ -5,6 +5,9 @@ Compute the Gini impurity of a vector of class labels 'classes'.
 """
 function gini_impurity(classes)
     len = length(classes)
+    if len == 0
+        return 0
+    end
     # https://juliastats.org/StatsBase.jl/v0.17/counts.html#StatsBase.countmap 
     # Create a dictionary of the classes (keys) and how often each one appears (values) in the given data
     counts = countmap(classes)
