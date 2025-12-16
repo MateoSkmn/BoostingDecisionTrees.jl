@@ -1,6 +1,16 @@
 # --- Code for Information Gain --- #
 
-""" This is needed to later calculate IG """
+"""
+    entropy(y::Vector)
+
+Compute the entropy of a vector of class labels.
+
+# Arguments
+- `y::Vector`: A vector of class labels.
+
+# Returns
+- `Float64`: The entropy of the input vector.
+"""
 function entropy(y::Vector)
     # Total number of samples
     n = length(y)
@@ -26,9 +36,18 @@ function entropy(y::Vector)
     return H
 end
 
-""" 
-    Computes the information gain obtained by splitting on one feature column. 
-    This calculates how helpful a selector is by comparing entropy of a feature before and after applying it
+"""
+    information_gain(X_column::Vector, y::Vector)
+
+Compute the information gain obtained by splitting on a feature column. This calculates
+how helpful a selector is by comparing entropy of a feature before and after applying it.
+
+# Arguments
+- `X_column::Vector`: A vector of feature values.
+- `y::Vector`: A vector of class labels, with the same length as `X_column`.
+
+# Returns
+- `Float64`: The information gain from splitting on the feature column.
 """
 function information_gain(X_column::Vector, y::Vector)
     # Compute entropy BEFORE the split (parent node)
@@ -62,7 +81,29 @@ function information_gain(X_column::Vector, y::Vector)
     return parent_entropy - weighted_entropy
 end
 
-""" Finds the feature index that gives the highest information gain. """
+"""
+    best_split_information_gain(X::Matrix, y::Vector)
+
+Find the feature index that yields the highest information gain.
+
+# Arguments
+`X::Matrix`: A matrix where each column is a feature and each row is a sample.
+`y::Vector`: A vector of class labels, with the same number of rows as X.
+
+# Returns
+`best_feature::Int`: The index of the feature with the highest information gain.
+`best_gain::Float64`: The highest information gain value found.
+
+# Examples
+```jldoctest
+julia> X = [1 1; 1 2; 2 1; 2 2];
+
+julia> y = ["a", "a", "b", "b"];
+
+julia> best_split_information_gain(X, y)
+(1, 1.0)
+```
+"""
 function best_split_information_gain(X::Matrix, y::Vector)
     # Number of features (columns)
     num_features = size(X, 2)
