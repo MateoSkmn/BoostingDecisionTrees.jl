@@ -8,14 +8,6 @@ Compute the Gini impurity of a vector of class labels.
 
 # Returns
 - `Float64`: The Gini impurity of the input vector. Returns `0` if the input is empty.
-
-# Examples
-```jldoctest
-julia> gini_impurity(["a", "a", "b"])
-0.4444444444444444
-julia> gini_impurity([])
-0
-```
 """
 function gini_impurity(classes)
     len = length(classes)

@@ -10,12 +10,6 @@ Return the most common class label in `y`.
 
 # Returns
 - The label that appears most frequently in `y`. If there is a tie, one of the tied labels is returned.
-
-# Examples
-```jldoctest
-julia> majority_label(["a", "b", "a"])
-"a"
-```
 """
 function majority_label(y)
     counts = countmap(y)

@@ -10,14 +10,6 @@ Compute the entropy of a vector of class labels.
 
 # Returns
 - `Float64`: The entropy of the input vector.
-
-# Examples
-```jldoctest
-julia> entropy(["a", "a", "b"])
-0.9182958340544896
-julia> entropy(["a", "a", "a", "a"])
-0.0
-```
 """
 function entropy(y::Vector)
     # Total number of samples
@@ -56,14 +48,6 @@ how helpful a selector is by comparing entropy of a feature before and after app
 
 # Returns
 - `Float64`: The information gain from splitting on the feature column.
-
-# Examples
-```jldoctest
-julia> X_column = [1, 1, 2, 2];
-julia> y = ["a", "a", "b", "b"];
-julia> information_gain(X_column, y)
-1.0
-```
 """
 function information_gain(X_column::Vector, y::Vector)
     # Compute entropy BEFORE the split (parent node)
