@@ -31,6 +31,7 @@ educational purposes and prototyping machine learning models.
 julia> using BoostingDecisionTrees
 
 julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5]
+
 julia> y = ["a", "b", "a"]
 
 julia> stump = train_stump(X, y)

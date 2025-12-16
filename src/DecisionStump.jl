@@ -66,7 +66,9 @@ Train a decision stump classifier on the dataset.
 # Examples
 ```jldoctest
 julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5]
+
 julia> y = ["a", "b", "a"]
+
 julia> stump = train_stump(X, y)
 DecisionStump(...)
 ```
@@ -126,7 +128,9 @@ Make predictions using the trained decision stump.
 # Examples
 ```jldoctest
 julia> stump = DecisionStump(1, 2.5, "A", "B")
+
 julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5]
+
 julia> preds = predict_stump(stump, X)
 ["A", "B", "A"]
 ```

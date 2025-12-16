@@ -37,7 +37,9 @@ Returns `nothing` if no split is possible.
 # Examples
 ```jldoctest
 julia> feature = [1.0, 2.0, 3.0, 4.0];
+
 julia> labels = ["A", "A", "B", "B"];
+
 julia> best_threshold, best_gini = best_split(feature, labels)
 (2.5, 0.0)
 ```

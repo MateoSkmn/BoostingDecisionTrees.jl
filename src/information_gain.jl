@@ -97,7 +97,9 @@ Find the feature index that yields the highest information gain.
 # Examples
 ```jldoctest
 julia> X = [1 1; 1 2; 2 1; 2 2];
+
 julia> y = ["a", "a", "b", "b"];
+
 julia> best_split_information_gain(X, y)
 (1, 1.0)
 ```
