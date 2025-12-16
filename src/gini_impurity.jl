@@ -1,7 +1,21 @@
 """
     gini_impurity(classes)
 
-Compute the Gini impurity of a vector of class labels 'classes'.
+Compute the Gini impurity of a vector of class labels.
+
+# Arguments
+- `classes::AbstractVector`: A collection of class labels.
+
+# Returns
+- `Float64`: The Gini impurity of the input vector. Returns `0` if the input is empty.
+
+# Examples
+```jldoctest
+julia> gini_impurity(["a", "a", "b"])
+0.4444444444444444
+julia> gini_impurity([])
+0
+```
 """
 function gini_impurity(classes)
     len = length(classes)
@@ -17,13 +31,24 @@ end
 """
     best_split(feature, labels)
 
-Parameters:
-- 'feature': a vector of numerical values
-- 'labels': a vector of class labels (same length as 'feature')
+Find the best threshold to split a feature vector for minimizing Gini impurity.
 
-Return:
-- 'best_threshold': best numerical value to split the 'feature' on
-- 'best_gini': weighted gini impurity after the split
+# Arguments
+- `feature::AbstractVector{<:Real}`: A vector of numerical feature values.
+- `labels::AbstractVector`: a vector of class labels (same length as `feature`)
+
+# Returns
+- `best_threshold::Union{Float64, Nothing}`: The best numerical value to split the feature on.
+Returns `nothing` if no split is possible.
+- `best_gini::Float64`: The weighted Gini impurity after the split.
+
+# Examples
+```jldoctest
+julia> feature = [1.0, 2.0, 3.0, 4.0];
+julia> labels = ["A", "A", "B", "B"];
+julia> best_threshold, best_gini = best_split(feature, labels)
+(2.5, 0.0)
+```
 """
 function best_split(feature, labels)
     n = length(feature)

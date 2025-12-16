@@ -1,6 +1,22 @@
 using StatsBase: countmap
 
-# Majority label helper 
+"""
+    majority_label(y)
+
+Return the most common class label in `y`.
+
+# Arguments
+- `y::AbstractVector`: a collection of class labels.
+
+# Returns
+- The label that appears most frequently in `y`. If there is a tie, one of the tied labels is returned.
+
+# Examples
+```jldoctest
+julia> majority_label(["a", "b", "a"])
+"a"
+```
+"""
 function majority_label(y)
     counts = countmap(y)
     max_label = nothing
@@ -17,7 +33,23 @@ function majority_label(y)
 end
 
 
-# Decision stump struct
+"""
+    DecisionStump
+
+A simple binary classifier based on a single feature threshold.
+
+# Fields
+- `feature::Int`: Index of the feature to split on.
+- `threshold::Float64`: Threshold value for the split.
+- `left_label`: Class label for samples where feature value <= threshold.
+- `right_label`: Class label for samples where feature value > threshold.
+
+# Examples
+```jldoctest
+julia> stump = DecisionStump(1, 2.5, "A", "B")
+DecisionStump(1, 2.5, "A", "B")
+```
+"""
 struct DecisionStump
     feature::Int
     threshold::Float64
@@ -25,7 +57,26 @@ struct DecisionStump
     right_label
 end
 
-# Train a decision stump
+"""
+    train_stump(X, y)
+
+Train a decision stump classifier on the dataset.
+
+# Arguments
+- `X::AbstractMatrix`: rows are samples, columns are features.
+- `y::AbstractVector`: class labels for each sample.
+
+# Returns
+- `DecisionStump`: a trained stump with `feature`, `threshold`, `left_label`, and `right_label`.
+
+# Examples
+```jldoctest
+julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5]
+julia> y = ["a", "b", "a"]
+julia> stump = train_stump(X, y)
+DecisionStump(...)
+```
+"""
 function train_stump(X::AbstractMatrix, y::AbstractVector)
     n_samples, n_features = size(X)
 
@@ -66,7 +117,26 @@ function train_stump(X::AbstractMatrix, y::AbstractVector)
 end
 
 
-# Prediction with the stump
+"""
+    predict_stump(stump, X)
+
+Make predictions using the trained decision stump.
+
+# Arguments
+- 'stump::DecisionStump': a trained decision stump model
+- 'X'::AbstractMatrix': rows are samples, columns are features
+
+# Returns
+- `Vector{Any}`: predicted class labels for each sample in `X`
+
+# Examples
+```jldoctest
+julia> stump = DecisionStump(1, 2.5, "A", "B")
+julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5]
+julia> preds = predict_stump(stump, X)
+["A", "B", "A"]
+```
+"""
 function predict_stump(stump::DecisionStump, X::AbstractMatrix)
     n = size(X, 1)
     preds = Vector{Any}(undef, n)
