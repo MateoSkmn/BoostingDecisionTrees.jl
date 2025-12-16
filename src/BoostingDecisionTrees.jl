@@ -30,15 +30,18 @@ educational purposes and prototyping machine learning models.
 ```jldoctest
 julia> using BoostingDecisionTrees
 
-julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5]
+julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5];
 
-julia> y = ["a", "b", "a"]
+julia> y = ["a", "b", "a"];
 
 julia> stump = train_stump(X, y)
-DecisionStump(...)
+DecisionStump(1, 2.5, "a", "b")
 
 julia> predict_stump(stump, X)
-["a", "b", "a"]
+3-element Vector{Any}:
+ "a"
+ "b"
+ "a"
 ```
 
 # Notes
