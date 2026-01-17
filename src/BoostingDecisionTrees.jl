@@ -51,6 +51,9 @@ decision-tree learners.
 module BoostingDecisionTrees
 
 using StatsBase: countmap
+using CSV
+using DataFrames
+using Random
 
 include("gini_impurity.jl")
 export best_split
@@ -66,4 +69,8 @@ export
     DecisionStump,
     train_stump,
     predict_stump
+
+include("data_loader.jl")
+export load_data
+
 end
