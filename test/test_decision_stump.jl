@@ -28,8 +28,10 @@ end
 
     stump = train_stump(X, y)
     preds = predict_stump(stump, X)
+    pred_single = predict_stump(stump, [1,2])
 
     @test preds == y
+    @test pred_single[1] == 0
 end
 
 @testset "no split possible (1 sample) -> constant stump" begin

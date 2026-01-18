@@ -28,7 +28,7 @@ end
 
 
 """
-    DecisionStump
+    DecisionStump(feature, threshold, left_label, right_label)
 
 A simple binary classifier based on a single feature threshold.
 
@@ -151,4 +151,20 @@ function predict_stump(stump::DecisionStump, X::AbstractMatrix)
     end
 
     return preds
+end
+
+"""
+    predict_stump(stump::DecisionStump, X::AbstractVector)
+
+    A convenience method for predicting the label of a single sample.
+
+    ### Arguments
+    - 'stump::DecisionStump': a trained decision stump model
+    - `X::AbstractVector`: A single sample represented as a vector of features.
+
+    ### Returns
+    - The predicted label for the single input sample.
+"""
+function predict_stump(stump::DecisionStump, X::AbstractVector)
+    return predict_stump(stump, reshape(X, 1, :))
 end
