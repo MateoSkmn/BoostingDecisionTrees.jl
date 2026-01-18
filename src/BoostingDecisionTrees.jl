@@ -73,4 +73,12 @@ export
 include("data_loader.jl")
 export load_data
 
+
+include("AdaBoost.jl")
+export
+  AdaBoost,
+  train_adaboost,
+  createWeightedDataset,
+  predict
+  
 end

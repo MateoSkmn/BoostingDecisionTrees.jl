@@ -6,4 +6,5 @@ using Test
     include("test_gini_impurity.jl")
     include("test_information_gain.jl")
     include("test_data_loader.jl")
+    include("test_ada_boost.jl")
 end
