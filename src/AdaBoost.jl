@@ -187,6 +187,7 @@ end
 A convenience method for predicting the label of a single sample.
 
 ### Arguments
+- `model::AdaBoost`: A trained AdaBoost structure.
 - `X::AbstractVector`: A single sample represented as a vector of features.
 
 ### Returns
