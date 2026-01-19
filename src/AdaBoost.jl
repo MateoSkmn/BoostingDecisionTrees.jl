@@ -4,7 +4,7 @@
     AdaBoost(stumps, alphas)
 
     A stronger ensemble learning classifier consisting of multiple weaker learners. 
-    Each new learner focusess on correcting the errors made by its predicessors.
+    Each new learner focuses on correcting the errors made by its predicessors.
 
     # Fields
     - `stumps::Vector{DecisionStump}`: A collection of DecisionStump objects. Each stump acts as a weak classifier that makes a prediction based on a single feature threshold.
