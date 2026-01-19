@@ -70,6 +70,15 @@ export
     train_stump,
     predict_stump
 
+include("DecisionTree.jl")
+    
+export
+    TreeNode,
+    DecisionNode,
+    LeafNode,
+    train_tree,
+    predict_tree
+
 include("data_loader.jl")
 export load_data
 
@@ -80,5 +89,5 @@ export
   train_adaboost,
   createWeightedDataset,
   predict
-  
+
 end
