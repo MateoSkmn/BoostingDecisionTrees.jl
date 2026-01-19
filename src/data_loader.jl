@@ -1,3 +1,16 @@
+"""
+    load_data(path)
+
+Load the Iris dataset from a CSV file, shuffle the observations, and split 
+features from labels.
+
+# Arguments
+- `path::String`: The file path to the CSV file (e.g., "src/data/Iris.csv").
+
+# Returns
+- `X::Matrix`: A matrix of feature values (columns 2 through 5).
+- `y::Vector`: A vector of target labels.
+"""
 function load_data(path::String) # use "src/data/Iris.csv" from within REPL
     df = CSV.read(path, DataFrame)
 
