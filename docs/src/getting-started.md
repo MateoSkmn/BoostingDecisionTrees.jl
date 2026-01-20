@@ -32,18 +32,18 @@ julia> stump = train_stump(X[1:100, :], y[1:100])
 
 julia> prediciton = predict_stump(stump, X[101:150, :])
 
-julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
+julia> sum(prediciton .== y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
 ```
 
 ### Decision Tree
 ```shell
-julia> ada = train_tree(X[1:100, :], y[1:100]; max_depth=5)
+julia> tree = train_tree(X[1:100, :], y[1:100]; max_depth=5)
 
-julia> ada2 = train_tree(X[1:100, :], y[1:100]) # This will use the same parameters as the code above
+julia> tree2 = train_tree(X[1:100, :], y[1:100]) # This will use the same parameters as the code above
 
-julia> prediciton = predict_tree(ada, X[101:150, :])
+julia> prediciton = predict_tree(tree, X[101:150, :])
 
-julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
+julia> sum(prediciton .== y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
 ```
 **TODO**
 
@@ -57,7 +57,7 @@ julia> ada2 = train_adaboost(X[1:100, :], y[1:100]) # This will use the same par
 
 julia> prediciton = predict(ada, X[101:150, :])
 
-julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
+julia> sum(prediciton .== y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
 ```
 
 ### Further
