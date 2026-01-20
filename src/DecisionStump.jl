@@ -1,33 +1,6 @@
 using StatsBase: countmap
 
 """
-    majority_label(y)
-
-Return the most common class label in `y`.
-
-# Arguments
-- `y::AbstractVector`: a collection of class labels.
-
-# Returns
-- The label that appears most frequently in `y`. If there is a tie, one of the tied labels is returned.
-"""
-function majority_label(y)
-    counts = countmap(y)
-    max_label = nothing
-    max_count = -Inf
-
-    for (label, c) in counts
-        if c > max_count
-            max_count = c
-            max_label = label
-        end
-    end
-
-    return max_label
-end
-
-
-"""
     DecisionStump(feature, threshold, left_label, right_label)
 
 A simple binary classifier based on a single feature threshold.

@@ -13,6 +13,7 @@ pkg> add https://github.com/MateoSkmn/BoostingDecisionTrees.jl
 julia> using BoostingDecisionTrees
 ```
 
+
 # Examples
 ### Load dataset
 For easier use you may download the given dataset under 'src/data/Iris.csv'. The dataset can also be found at https://www.kaggle.com/datasets/uciml/iris.
@@ -35,7 +36,16 @@ julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the cre
 ```
 
 ### Decision Tree
-[TODO]
+```shell
+julia> ada = train_tree(X[1:100, :], y[1:100]; max_depth=5)
+
+julia> ada2 = train_tree(X[1:100, :], y[1:100]) # This will use the same parameters as the code above
+
+julia> prediciton = predict_tree(ada, X[101:150, :])
+
+julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
+```
+**TODO**
 
 ### AdaBoost
 AdaBoost is an ensemble learning classifier using multiple weaker learners. Each new learner focuses on correcting the errors made by its predicessors.
@@ -51,6 +61,5 @@ julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the cre
 ```
 
 ### Further
-[TODO]
-In later development you will be able to switch between the splitting criteria 'gini impurity' and 'information gain'.
+**TODO**: In later development you will be able to switch between the splitting criteria 'gini impurity' and 'information gain'.
 As for now only 'gini impurity' will be used when creating models.

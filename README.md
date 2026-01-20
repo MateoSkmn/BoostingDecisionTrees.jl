@@ -3,6 +3,8 @@
 [![Build Status](https://github.com/MateoSkmn/BoostingDecisionTrees.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/MateoSkmn/BoostingDecisionTrees.jl/actions/workflows/CI.yml?query=branch%3Amaster)
 [![Coverage](https://codecov.io/gh/MateoSkmn/BoostingDecisionTrees.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MateoSkmn/BoostingDecisionTrees.jl)
 
+This project demonstrates how different tree based models handle multiclass classification using the Iris Dataset. By comparing a single split (stump) to a full tree and an adaptive ensemble (AdaBoost), we can show the "power" of each approach.
+
 # Running the package
 To use this package, open a Julia REPL and run:
 ```shell
@@ -34,7 +36,16 @@ julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the cre
 ```
 
 ### Decision Tree
-[TODO]
+```shell
+julia> ada = train_tree(X[1:100, :], y[1:100]; max_depth=5)
+
+julia> ada2 = train_tree(X[1:100, :], y[1:100]) # This will use the same parameters as the code above
+
+julia> prediciton = predict_tree(ada, X[101:150, :])
+
+julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
+```
+**TODO**
 
 ### AdaBoost
 AdaBoost is an ensemble learning classifier using multiple weaker learners. Each new learner focuses on correcting the errors made by its predicessors.
@@ -50,6 +61,5 @@ julia> sum(prediciton == y[101:150]) / size(y[101:150], 1) # Accuracy of the cre
 ```
 
 ### Further
-[TODO]
-In later development you will be able to switch between the splitting criteria 'gini impurity' and 'information gain'.
+**TODO**: In later development you will be able to switch between the splitting criteria 'gini impurity' and 'information gain'.
 As for now only 'gini impurity' will be used when creating models.
