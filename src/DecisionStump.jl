@@ -1,7 +1,7 @@
 using StatsBase: countmap
 
 """
-    DecisionStump
+    DecisionStump(feature, threshold, left_label, right_label)
 
 A simple binary classifier based on a single feature threshold.
 

@@ -26,7 +26,6 @@ function majority_label(y)
     return max_label
 end
 
-
 """
     TreeNode
 
@@ -54,7 +53,6 @@ struct DecisionNode <: TreeNode
     right::TreeNode
 end
 
-
 """
     LeafNode
 
@@ -66,7 +64,6 @@ A leaf node in a decision tree that holds a class label for prediction.
 struct LeafNode <: TreeNode
     label
 end
-
 
 """
     train_tree(X, y; max_depth=5)
@@ -89,7 +86,8 @@ julia> y = ["a", "b", "a", "b"];
 
 julia> tree = train_tree(X, y; max_depth=2)
 DecisionNode(1, 2.5, LeafNode("a"), LeafNode("b"))
-```"""
+```
+"""
 function train_tree(X::AbstractMatrix, y::AbstractVector; max_depth=5)
     n_samples, n_features = size(X)
     unique_labels = unique(y)
@@ -110,20 +108,11 @@ function train_tree(X::AbstractMatrix, y::AbstractVector; max_depth=5)
         feature_col = X[:, j]
         threshold, gini = best_split(feature_col, y)
 
-        if threshold === nothing
-            continue
-        end
-
         if gini < best_gini
             best_gini = gini
             best_threshold = threshold
             best_feature = j
         end
-    end
-
-    # If no split is possible, return a leaf node
-    if best_feature == 0
-        return LeafNode(majority_label(y))
     end
 
     # Split the data
@@ -137,7 +126,6 @@ function train_tree(X::AbstractMatrix, y::AbstractVector; max_depth=5)
 
     return DecisionNode(best_feature, best_threshold, left_subtree, right_subtree)
 end
-
 
 """
     predict_tree(node::TreeNode, x)
@@ -157,7 +145,8 @@ julia> leaf = LeafNode("a");
 
 julia> predict_tree(leaf, [1.0, 2.0])
 "a"
-```"""
+```
+"""
 function predict_tree(node::TreeNode, x::AbstractVector)
     if node isa LeafNode
         return node.label
@@ -169,7 +158,6 @@ function predict_tree(node::TreeNode, x::AbstractVector)
         end
     end
 end
-
 
 """
     predict_tree(tree::TreeNode, X::AbstractMatrix)
@@ -194,7 +182,8 @@ julia> preds = predict_tree(tree, X)
  "a"
  "b"
  "a"
-```"""
+```
+"""
 function predict_tree(tree::TreeNode, X::AbstractMatrix)
     n = size(X, 1)
     preds = Vector{Any}(undef, n)
