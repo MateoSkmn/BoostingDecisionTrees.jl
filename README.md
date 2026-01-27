@@ -24,7 +24,7 @@ This loads the 150 samples in a random order.
 **Attention:** this method was created especially for the described Iris.csv and might not work for other datasets.
 You can always use your own dataset as long as X is a Matrix and y is a Vector.
 
-### Decision Stump
+### Decision Stump [Deprecated!]
 When you have defined a dataset you can start training your classifiers. The most simple one is the decision stump.
 You can train a stump with the created dataset and predict labels for your dataset. The following example shows you how to use a simple training and test split
 ```shell
