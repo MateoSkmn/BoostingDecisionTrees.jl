@@ -27,22 +27,7 @@ educational purposes and prototyping machine learning models.
   - `best_split_information_gain`: Find the feature index with the highest information gain.
 
 # Examples
-```jldoctest
-julia> using BoostingDecisionTrees
-
-julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5];
-
-julia> y = ["a", "b", "a"];
-
-julia> stump = train_stump(X, y)
-DecisionStump(1, 2.5, "a", "b")
-
-julia> predict_stump(stump, X)
-3-element Vector{Any}:
- "a"
- "b"
- "a"
-```
+[TODO] Redo jldoctest if necessary (deleted because Stump was removed)
 
 # Notes
 Intended as a compact educational toolkit and a foundation for experiments with boosting and small
@@ -62,13 +47,6 @@ include("information_gain.jl")
 export best_split_information_gain
 # TODO: later when this criterion is used inside the DecisionTree consider renaming
 # OK for now as it is not used
-
-include("DecisionStump.jl")
-
-export
-    DecisionStump,
-    train_stump,
-    predict_stump
 
 include("DecisionTree.jl")
     
