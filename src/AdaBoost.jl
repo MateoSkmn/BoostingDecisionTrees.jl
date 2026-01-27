@@ -1,18 +1,19 @@
 # Concept and structure adapted from: http://youtube.com/watch?v=LsK-xG1cLYA
 
 """
-    AdaBoost(stumps, alphas)
+    AdaBoost(learner, alphas)
 
     A stronger ensemble learning classifier consisting of multiple weaker learners. 
     Each new learner focuses on correcting the errors made by its predicessors.
 
     # Fields
-    - `stumps::Vector{DecisionStump}`: A collection of DecisionStump objects. Each stump acts as a weak classifier that makes a prediction based on a single feature threshold.
-    - `alphas::Vector{Float64}`: A vector of floating-point weights, corresponding to the voting power of a stumps. A higher alpha values means the stump was more accurate during the training phase.
+    - `learner::Vector{DecisionTree}`: A collection of DecisionTree objects. Each tree acts as a weak classifier that makes a prediction based on a single feature threshold.
+    - `alphas::Vector{Float64}`: A vector of floating-point weights, corresponding to the voting power of a tree. A higher alpha values means the stump was more accurate during the training phase.
 """
-struct AdaBoost
-    stumps::Vector{DecisionStump}
+struct AdaBoost{T}
+    learners::Vector{TreeNode}
     alphas::Vector{Float64}
+    labels::Vector{T}
 end
 
 # max_alpha = 2.5, happens for an accuracy of >= 99.999%. The bigger the value the more of a 'dictator' becomes a stump with a perfect result
@@ -26,11 +27,12 @@ end
     - `y::AbstractVector`: class labels for each sample.
     - `iterations::Integer`: maximum number of weak learners. In case of perfect fit the training will be stopped early. Values must be in range [1, Inf). Default is 50.
     - `max_alpha::Float64`: A threshold to cap the "amount of say" (alpha) for any single stump. Default is 2.5 which means an accuracy of >= 99.999%. The bigger the value the more of a 'dictator' becomes a stump with a perfect result.
+    - `max_depth::Integer`: Maximum depth of each tree. Default is set to 1 which is equivalent to a decision stump
 
     # Returns
-    - `AdaBoost`: a trained classifier with `stumps` and `alphas`.
+    - `AdaBoost`: a trained classifier with `learners` and `alphas`.
 """
-function train_adaboost(X::AbstractMatrix, y::AbstractVector; iterations::Integer = 50, max_alpha::Float64 = 2.5)
+function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Integer = 50, max_alpha::Float64 = 2.5, max_depth::Integer=1) where T
     if iterations < 1
         throw(ArgumentError("iterations must be at least 1" ))
     end
@@ -38,20 +40,21 @@ function train_adaboost(X::AbstractMatrix, y::AbstractVector; iterations::Intege
     n = size(X, 1)
     w = fill(1.0 / n, n)
 
-    stumps = DecisionStump[]
+    learners = TreeNode[]
     alphas = Float64[]
+    labels = unique(y)
 
     for i in 1:iterations
         # Train a DecisionStump
-        stump = train_stump(X, y)
+        tree = train_tree(X, y; max_depth=max_depth)
         # Get total error of the DecisionStump
-        stump_prediction = predict_stump(stump, X)
-        err = sum(stump_prediction .!= y) / size(y, 1)
+        tree_prediction = predict_tree(tree, X)
+        err = sum(tree_prediction .!= y) / size(y, 1)
         # Calculate alpha (Amount of say)
         # log(0) => -Inf || 1/0 => Inf
         alpha = 0.5 * log((1 - err) / err)
 
-        push!(stumps, stump)
+        push!(learners, tree)
         push!(alphas, min(alpha, max_alpha))
         # alpha can go from -Inf (The stump did everything wrong) to max_alpha (the stump did everything correct)
         # As Inf would cause the stump to become a 'Dictator' making only that stump responsable for a decision
@@ -63,7 +66,7 @@ function train_adaboost(X::AbstractMatrix, y::AbstractVector; iterations::Intege
 
         # Update sample weights
         for i in eachindex(y)
-            if stump_prediction[i] != y[i]
+            if tree_prediction[i] != y[i]
                 w[i] *= exp(alpha)      # incorrectly classified
             else
                 w[i] *= exp(-alpha)     # correctly classified
@@ -71,12 +74,12 @@ function train_adaboost(X::AbstractMatrix, y::AbstractVector; iterations::Intege
         end
         # Normalize weights
         w = w ./ sum(w)
-        # Create new dataset based on the errors made by the DecisionStump
+        # Create new dataset based on the errors made by the DecisionTree
         X, y = createWeightedDataset(X,y,w)
         # Repeat for the amount of iterations
     end
 
-    return AdaBoost(stumps, alphas)
+    return AdaBoost{T}(learners, alphas, labels)
 end
 
 # helper
@@ -114,7 +117,6 @@ function createWeightedDataset(X::AbstractMatrix, y::AbstractVector, weights::Ve
         # findfirst returns the index of the first 'true' element
         idx = findfirst(cw -> cw >= r, cumulative_weights)
         
-        # In case of floating point errors, default to the last index
         # NOTE: This is a fallback and ideally should not happen
         if isnothing(idx)
             idx = n_samples
@@ -132,7 +134,7 @@ end
 
 Predict class labels for samples in `X` using a trained AdaBoost classifier.
 
-The function adds the weighted votes of all decision stumps
+The function adds the weighted votes of all decision trees
 within the model to determine the most likely class for each sample.
 
 ### Arguments
@@ -141,44 +143,24 @@ within the model to determine the most likely class for each sample.
 
 ### Returns
 - `Vector`: A vector of predicted labels, with the same type as the labels found 
-  in the model's stumps.
+  in the model's learners.
 """
 function predict(model::AdaBoost, X::AbstractMatrix)
     n_samples = size(X, 1)
-    
-    # 1. Dynamically find all unique labels used across the entire ensemble
-    all_possible_labels = Set()
-    for s in model.stumps
-        push!(all_possible_labels, s.left_label)
-        push!(all_possible_labels, s.right_label)
-    end
-    labels = collect(all_possible_labels)
 
-    # 2. Initialize scores for each sample and each potential label
-    # scores[label] maps to a Vector of weights for each sample
-    scores = Dict(lbl => zeros(Float64, n_samples) for lbl in labels)
+    # Set 0 scores for each label the model can predict
+    scores = Dict(lbl => zeros(Float64, n_samples) for lbl in model.labels)
 
-    # 3. Aggregate weighted votes from every stump
-    for (stump, alpha) in zip(model.stumps, model.alphas)
-        feature_col = X[:, stump.feature]
-        
+    # Sum up votes from every tree
+    for (tree, alpha) in zip(model.learners, model.alphas)
         for i in 1:n_samples
-            # Decide label based on threshold
-            pred = feature_col[i] <= stump.threshold ? stump.left_label : stump.right_label
-            
-            # Add this stump's "voice" (alpha) to the total for that label
+            pred = predict_tree(tree, X[i, :])
             scores[pred][i] += alpha
         end
     end
 
-    # 4. Final Prediction: For each sample, pick the label with the highest score
-    final_preds = Vector{eltype(labels)}(undef, n_samples)
-    for i in 1:n_samples
-        # argmax returns the label that maximizes the score at index i
-        final_preds[i] = argmax(lbl -> scores[lbl][i], labels)
-    end
-
-    return final_preds
+    # argmax returns the label with maximum score at index i
+    return [argmax(lbl -> scores[lbl][i], model.labels) for i in 1:n_samples]
 end
 
 """
