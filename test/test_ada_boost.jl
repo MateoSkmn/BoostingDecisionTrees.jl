@@ -13,7 +13,7 @@ y = [0, 1, 0, 1, 1, 0, 0, 1, 2, 0]
 ada_boost = train_adaboost(X,y; iterations=50, max_alpha=2.5)
 
 @testset "AdaBoost training" begin
-    @test size(ada_boost.stumps, 1) < 50 #Early break, because there is not a lot of data
+    @test size(ada_boost.learners, 1) < 50 #Early break, because there is not a lot of data
     @test maximum(ada_boost.alphas) == 2.5 #Final value should always be the max_alpha if number of stumps is less then iterations
     @test argmax(ada_boost.alphas) == size(ada_boost.alphas, 1)
 
