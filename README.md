@@ -37,13 +37,11 @@ julia> sum(prediciton .== y[101:150]) / size(y[101:150], 1) # Accuracy of the cr
 
 ### Decision Tree
 ```shell
-julia> tree = train_tree(X[1:100, :], y[1:100]; max_depth=5)
+julia> tree = train_tree(X[1:100, :], y[1:100]; max_depth=5, criterion=:gini)
 
-julia> tree2 = train_tree(X[1:100, :], y[1:100]) # This will use the same parameters as the code above
+julia> prediction = predict_tree(tree, X[101:150, :])
 
-julia> prediciton = predict_tree(tree, X[101:150, :])
-
-julia> sum(prediciton .== y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
+julia> sum(prediction .== y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
 ```
 **TODO**
 
