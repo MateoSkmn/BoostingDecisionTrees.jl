@@ -47,6 +47,17 @@ julia> sum(prediciton .== y[101:150]) / size(y[101:150], 1) # Accuracy of the cr
 ```
 **TODO**
 
+## Updated logic
+```shell
+julia> tree_gini = train_tree(X[1:100, :], y[1:100]; max_depth=5, criterion=:gini) # Using Gini impurity (default)
+
+julia> tree_info = train_tree(X[1:100, :], y[1:100]; max_depth=5, criterion=:information_gain) # Using Information Gain for categorical features
+
+julia> prediction = predict_tree(tree_gini, X[101:150, :]) # Predictions on test set
+
+julia> sum(prediction .== y[101:150]) / length(y[101:150]) # Accuracy of the model
+```
+
 ### AdaBoost
 AdaBoost is an ensemble learning classifier using multiple weaker learners. Each new learner focuses on correcting the errors made by its predicessors.
 You can train a model using your dataset. You may also adjust the maximum number of iterations as well as the maximum 'power' of a weaker learner.
@@ -59,7 +70,3 @@ julia> prediciton = predict(ada, X[101:150, :])
 
 julia> sum(prediciton .== y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
 ```
-
-### Further
-**TODO**: In later development you will be able to switch between the splitting criteria 'gini impurity' and 'information gain'.
-As for now only 'gini impurity' will be used when creating models.

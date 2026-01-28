@@ -1,17 +1,17 @@
 # --- Code for Information Gain --- #
 
 """
-    entropy(y::Vector)
+    entropy(y::AbstractVector)
 
-Compute the entropy of a vector of class labels.
+Compute the entropy of a AbstractVector of class labels.
 
 # Arguments
-- `y::Vector`: A vector of class labels.
+- `y::AbstractVector`: A AbstractVector of class labels.
 
 # Returns
-- `Float64`: The entropy of the input vector.
+- `Float64`: The entropy of the input AbstractVector.
 """
-function entropy(y::Vector)
+function entropy(y::AbstractVector)
     # Total number of samples
     n = length(y)
 
@@ -37,19 +37,19 @@ function entropy(y::Vector)
 end
 
 """
-    information_gain(X_column::Vector, y::Vector)
+    information_gain(X_column::AbstractVector, y::AbstractVector)
 
 Compute the information gain obtained by splitting on a feature column. This calculates
 how helpful a selector is by comparing entropy of a feature before and after applying it.
 
 # Arguments
-- `X_column::Vector`: A vector of feature values.
-- `y::Vector`: A vector of class labels, with the same length as `X_column`.
+- `X_column::AbstractVector`: A AbstractVector of feature values.
+- `y::AbstractVector`: A AbstractVector of class labels, with the same length as `X_column`.
 
 # Returns
 - `Float64`: The information gain from splitting on the feature column.
 """
-function information_gain(X_column::Vector, y::Vector)
+function information_gain(X_column::AbstractVector, y::AbstractVector)
     # Compute entropy BEFORE the split (parent node)
     parent_entropy = entropy(y)
 
@@ -82,13 +82,13 @@ function information_gain(X_column::Vector, y::Vector)
 end
 
 """
-    best_split_information_gain(X::Matrix, y::Vector)
+    best_split_information_gain(X::Matrix, y::AbstractVector)
 
 Find the feature index that yields the highest information gain.
 
 # Arguments
 `X::Matrix`: A matrix where each column is a feature and each row is a sample.
-`y::Vector`: A vector of class labels, with the same number of rows as X.
+`y::AbstractVector`: A AbstractVector of class labels, with the same number of rows as X.
 
 # Returns
 `best_feature::Int`: The index of the feature with the highest information gain.
@@ -104,7 +104,7 @@ julia> best_split_information_gain(X, y)
 (1, 1.0)
 ```
 """
-function best_split_information_gain(X::Matrix, y::Vector)
+function best_split_information_gain(X::Matrix, y::AbstractVector)
     # Number of features (columns)
     num_features = size(X, 2)
 
@@ -116,7 +116,7 @@ function best_split_information_gain(X::Matrix, y::Vector)
 
     # Loop over each feature column
     for feature_idx in 1:num_features
-        # Extract column as vector
+        # Extract column as AbstractVector
         X_column = X[:, feature_idx]
 
         # Compute information gain for this feature
