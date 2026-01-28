@@ -87,7 +87,7 @@ end
     createWeightedDataset(X, y, weights)
 
     Create a new dataset by sampling rows from `X` and `y`, guided by a 
-    probability distribution defined by `weights` where samples with higehr weights are more likely to be selected for the new dataset
+    probability distribution defined by `weights` where samples with higher weights are more likely to be selected for the new dataset
 
     # Arguments
     - `X::AbstractMatrix`: rows are samples, columns are features.
@@ -100,33 +100,12 @@ end
 """
 function createWeightedDataset(X::AbstractMatrix, y::AbstractVector, weights::Vector{Float64})
     n_samples = size(X, 1)
-    n_features = size(X, 2)
-    
-    # Pre-allocate the new X' and y'
-    X_prime = similar(X)
-    y_prime = similar(y)
-    
-    # Compute the cumulative sum of weights
-    cumulative_weights = cumsum(weights)
-    
-    # Repeat until X' has the same amount of data as X
-    for i in 1:n_samples
-        r = rand()
-        
-        # Find the first index where cumulative weight >= random value
-        # findfirst returns the index of the first 'true' element
-        idx = findfirst(cw -> cw >= r, cumulative_weights)
-        
-        # NOTE: This is a fallback and ideally should not happen
-        if isnothing(idx)
-            idx = n_samples
-        end
-        
-        X_prime[i, :] = X[idx, :]
-        y_prime[i] = y[idx]
-    end
 
-    return X_prime, y_prime
+    # sample(a, wv, n) => https://github.com/JuliaStats/StatsBase.jl/blob/3203a810ad0642b2ec61eb37f5f142a8d18ee22a/src/sampling.jl#L531
+    # Returns 'n' indeces of randomly chosen rows in 'a' based on the given weights 'wv'  
+    # Weights takes a vector with weights and handles adding the sum of all values => https://github.com/JuliaStats/StatsBase.jl/blob/3203a810ad0642b2ec61eb37f5f142a8d18ee22a/src/weights.jl#L72
+    idxs = sample(1:n_samples, Weights(weights), n_samples)
+    return X[idxs, :], y[idxs]
 end
 
 """
