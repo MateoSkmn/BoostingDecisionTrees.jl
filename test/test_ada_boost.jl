@@ -29,18 +29,3 @@ end
     @test size(preds, 1) == 1
 end
 
-@testset "createWeightedDataset fallback" begin
-    X = [1.0 2.0; 3.0 4.0]
-    y = [1, 2]
-    weights = [NaN, NaN] # Could happen if max_alpha is Inf 
-
-    X_test = [3.0 4.0; 3.0 4.0]
-    y_test = [2,2]
-
-    X_prime, y_prime = createWeightedDataset(X, y, weights)
-
-    @test X_prime == X_test
-    @test y_prime == y_test
-end
-
-

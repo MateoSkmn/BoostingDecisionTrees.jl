@@ -35,10 +35,10 @@ decision-tree learners.
 """
 module BoostingDecisionTrees
 
-using StatsBase: countmap
-using CSV
-using DataFrames
-using Random
+using StatsBase: countmap, sample, Weights
+using CSV: read
+using DataFrames: DataFrame, nrow
+using Random: shuffle
 
 include("gini_impurity.jl")
 export best_split
@@ -65,7 +65,6 @@ include("AdaBoost.jl")
 export
   AdaBoost,
   train_adaboost,
-  createWeightedDataset,
   predict
 
 end
