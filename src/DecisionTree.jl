@@ -1,4 +1,5 @@
-using StatsBase: countmap
+#TODO: AI Note
+# -------------------- Utility Functions --------------------
 
 """
     majority_label(y)
@@ -26,12 +27,12 @@ function majority_label(y)
     return max_label
 end
 
+# -------------------- Node Types --------------------
+
 """
     TreeNode
 
-Abstract type representing a node in a decision tree.
-
-All nodes in a decision tree are subtypes of `TreeNode`.
+Abstract type for decision tree nodes.
 """
 abstract type TreeNode end
 
@@ -56,143 +57,122 @@ end
 """
     LeafNode
 
-A leaf node in a decision tree that holds a class label for prediction.
-
-# Fields
-- `label`: the predicted class label for samples reaching this leaf node.
+A leaf node holding a predicted class label.
 """
 struct LeafNode <: TreeNode
     label
 end
 
-"""
-    train_tree(X, y; max_depth=5)
+# -------------------- Training --------------------
 
-Train a decision tree classifier on the dataset.
+"""
+    train_tree(X, y; max_depth=5, criterion=:gini)
+
+Train a decision tree using numeric threshold splits.
 
 # Arguments
-- `X::AbstractMatrix`: rows are samples, columns are features.
-- `y::AbstractVector`: class labels for each sample.
-- `max_depth::Int`: maximum depth of the tree (default: 5).
+- `X::AbstractMatrix`: feature matrix.
+- `y::AbstractVector`: class labels.
+- `max_depth::Int`: maximum tree depth.
+- `criterion::Symbol`: `:information_gain` or `:gini`.
 
 # Returns
-- `TreeNode`: a trained decision tree.
-
-# Examples
-```jldoctest
-julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5; 4.0 3.0];
-
-julia> y = ["a", "b", "a", "b"];
-
-julia> tree = train_tree(X, y; max_depth=2)
-DecisionNode(1, 2.5, LeafNode("a"), LeafNode("b"))
-```
+- `TreeNode`
 """
-function train_tree(X::AbstractMatrix, y::AbstractVector; max_depth=5)
-    n_samples, n_features = size(X)
-    unique_labels = unique(y)
+function train_tree(X::AbstractMatrix, y::AbstractVector;
+                    max_depth::Int=5,
+                    criterion::Symbol=:gini)
 
-    # Base cases:
-    # 1. If only one class, return a leaf node.
-    # 2. If max_depth is reached, return a leaf node with the majority label.
-    if length(unique_labels) == 1 || max_depth <= 0
+    n_samples, n_features = size(X)
+
+    # Stopping conditions
+    if n_samples == 0 || length(unique(y)) == 1 || max_depth <= 0
         return LeafNode(majority_label(y))
     end
 
-    # Find the best split
     best_feature = 0
     best_threshold = 0.0
-    best_gini = Inf
 
-    for j in 1:n_features
-        feature_col = X[:, j]
-        threshold, gini = best_split(feature_col, y)
+    if criterion == :information_gain
+        best_score = -Inf
 
-        if gini < best_gini
-            best_gini = gini
-            best_threshold = threshold
-            best_feature = j
+        for j in 1:n_features
+            threshold, gain = information_gain(X[:, j], y)
+            if gain > best_score
+                best_score = gain
+                best_threshold = threshold
+                best_feature = j
+            end
         end
+
+        if best_score <= 0
+            return LeafNode(majority_label(y))
+        end
+
+    elseif criterion == :gini
+        best_score = Inf
+
+        for j in 1:n_features
+            threshold, gini = best_split(X[:, j], y)  # assumed existing
+            if gini < best_score
+                best_score = gini
+                best_threshold = threshold
+                best_feature = j
+            end
+        end
+
+        if best_feature == 0
+            return LeafNode(majority_label(y))
+        end
+
+    else
+        throw(ArgumentError("Unknown criterion: $criterion"))
     end
 
-    # Split the data
-    feature_col = X[:, best_feature]
-    left_idx = findall(x -> x <= best_threshold, feature_col)
-    right_idx = findall(x -> x > best_threshold, feature_col)
+    left_idx  = findall(x -> x <= best_threshold, X[:, best_feature])
+    right_idx = findall(x -> x > best_threshold, X[:, best_feature])
 
-    # Recursively train left and right subtrees
-    left_subtree = train_tree(X[left_idx, :], y[left_idx], max_depth=max_depth-1)
-    right_subtree = train_tree(X[right_idx, :], y[right_idx], max_depth=max_depth-1)
+    left_subtree = train_tree(X[left_idx, :], y[left_idx],
+                              max_depth=max_depth - 1,
+                              criterion=criterion)
 
-    return DecisionNode(best_feature, best_threshold, left_subtree, right_subtree)
+    right_subtree = train_tree(X[right_idx, :], y[right_idx],
+                               max_depth=max_depth - 1,
+                               criterion=criterion)
+
+    return DecisionNode(best_feature, best_threshold,
+                        left_subtree, right_subtree)
 end
 
+# -------------------- Prediction --------------------
+
 """
-    predict_tree(node::TreeNode, x)
+    predict(node::TreeNode, x)
 
-Make a prediction for a single sample `x` using the decision tree.
-
-# Arguments
-- `node::TreeNode`: a node in the decision tree.
-- `x::AbstractVector`: a single sample.
-
-# Returns
-- The predicted class label.
-
-# Examples
-```jldoctest
-julia> leaf = LeafNode("a");
-
-julia> predict_tree(leaf, [1.0, 2.0])
-"a"
-```
+Predict the class label for a single sample.
 """
-function predict_tree(node::TreeNode, x::AbstractVector)
+function predict(node::TreeNode, x::AbstractVector)
     if node isa LeafNode
         return node.label
     else
         if x[node.feature] <= node.threshold
-            return predict_tree(node.left, x)
+            return predict(node.left, x)
         else
-            return predict_tree(node.right, x)
+            return predict(node.right, x)
         end
     end
 end
 
 """
-    predict_tree(tree::TreeNode, X::AbstractMatrix)
+    predict(tree::TreeNode, X::AbstractMatrix)
 
-Make predictions for multiple samples using the decision tree.
-
-# Arguments
-- `tree::TreeNode`: a trained decision tree.
-- `X::AbstractMatrix`: rows are samples, columns are features.
-
-# Returns
-- `Vector{Any}`: predicted class labels for each sample in `X`.
-
-# Examples
-```jldoctest
-julia> tree = DecisionNode(1, 2.5, LeafNode("a"), LeafNode("b"));
-
-julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5];
-
-julia> preds = predict_tree(tree, X)
-3-element Vector{Any}:
- "a"
- "b"
- "a"
-```
+Predict class labels for multiple samples.
 """
-function predict_tree(tree::TreeNode, X::AbstractMatrix)
+function predict(tree::TreeNode, X::AbstractMatrix)
     n = size(X, 1)
     preds = Vector{Any}(undef, n)
-
     for i in 1:n
-        preds[i] = predict_tree(tree, X[i, :])
+        preds[i] = predict(tree, X[i, :])
     end
-
     return preds
 end
-
-

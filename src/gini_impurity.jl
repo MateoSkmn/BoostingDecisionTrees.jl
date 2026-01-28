@@ -9,7 +9,7 @@ Compute the Gini impurity of a vector of class labels.
 # Returns
 - `Float64`: The Gini impurity of the input vector. Returns `0` if the input is empty.
 """
-function gini_impurity(classes)
+function gini_impurity(classes::AbstractVector)
     len = length(classes)
     if len == 0
         return 0
@@ -44,7 +44,7 @@ julia> best_threshold, best_gini = best_split(feature, labels)
 (2.5, 0.0)
 ```
 """
-function best_split(feature, labels)
+function best_split(feature::AbstractVector{<:Real}, labels::AbstractVector)
     n = length(feature)
     best_gini = Inf
     best_threshold = nothing
