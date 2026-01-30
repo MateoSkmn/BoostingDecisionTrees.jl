@@ -32,7 +32,7 @@ end
     # Returns
     - `AdaBoost`: a trained classifier with `learners` and `alphas`.
 """
-function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Integer = 50, max_alpha::Float64 = 2.5, max_depth::Integer=1) where T
+function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Integer = 50, max_alpha::Float64 = 2.5, max_depth::Integer=1, criterion::Symbol=:gini) where T
     if iterations < 1
         throw(ArgumentError("iterations must be at least 1" ))
     end
@@ -46,7 +46,7 @@ function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Int
 
     for i in 1:iterations
         # Train a DecisionStump
-        tree = train_tree(X, y; max_depth=max_depth)
+        tree = train_tree(X, y; max_depth=max_depth, criterion=criterion)
         # Get total error of the DecisionStump
         tree_prediction = predict(tree, X)
         err = sum(tree_prediction .!= y) / size(y, 1)

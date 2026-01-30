@@ -1,3 +1,7 @@
+# AI Note:
+# Parts of the in-file documentation such as docstrings and code comments are based on AI suggestions
+# AI was used to suggest performance and structural improvements and suggestions were taken into account when finalizing the module
+
 @testset "information_gain" begin
     # Example numeric dataset
     X = [
@@ -28,5 +32,6 @@
 
     @test best_feature == 1          
     @test best_gain > 0.0            
-    @test best_threshold > 0.0       
+    @test best_threshold > 0.0    
+
 end

@@ -1,4 +1,7 @@
-#TODO: AI Note
+# AI Note:
+# Parts of the in-file documentation such as docstrings and code comments are based on AI suggestions
+# AI was used to suggest performance and structural improvements and suggestions were taken into account when finalizing the module
+
 # -------------------- Utility Functions --------------------
 
 """
@@ -79,9 +82,7 @@ Train a decision tree using numeric threshold splits.
 # Returns
 - `TreeNode`
 """
-function train_tree(X::AbstractMatrix, y::AbstractVector;
-                    max_depth::Int=5,
-                    criterion::Symbol=:gini)
+function train_tree(X::AbstractMatrix, y::AbstractVector; max_depth::Int=5,criterion::Symbol=:gini)
 
     n_samples, n_features = size(X)
 

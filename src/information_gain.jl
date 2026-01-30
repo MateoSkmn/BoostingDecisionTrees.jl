@@ -1,3 +1,7 @@
+# AI Note:
+# Parts of the in-file documentation such as docstrings and code comments are based on AI suggestions
+# AI was used to suggest performance and structural improvements and suggestions were taken into account when finalizing the module
+
 """
     entropy(y::AbstractVector)
 
@@ -9,6 +13,7 @@ Compute the entropy of a AbstractVector of class labels.
 # Returns
 - `Float64`: The entropy of the input AbstractVector.
 """
+
 function entropy(y::AbstractVector)
     # Total number of samples
     n = length(y)
@@ -44,8 +49,7 @@ using a threshold (x ≤ t vs. x > t).
 - `best_threshold::Float64`: threshold yielding maximum information gain
 - `best_gain::Float64`: corresponding information gain
 """
-function information_gain(X_column::AbstractVector{<:Real},
-                          y::AbstractVector)
+function information_gain(X_column::AbstractVector{<:Real}, y::AbstractVector)
 
     n = length(y)
     n == 0 && return (0.0, 0.0)
@@ -77,8 +81,7 @@ function information_gain(X_column::AbstractVector{<:Real},
         y_right = y[right_idx]
 
         weighted_entropy =
-            (length(y_left)  / n) * entropy(y_left) +
-            (length(y_right) / n) * entropy(y_right)
+            (length(y_left)  / n) * entropy(y_left) + (length(y_right) / n) * entropy(y_right)
 
         gain = parent_entropy - weighted_entropy
 
