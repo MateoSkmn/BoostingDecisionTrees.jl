@@ -16,6 +16,9 @@ with support for both Gini impurity and information gain as splitting criteria.
 - *Decision TreeNode Functions*:
   - train_tree: Train a decision tree on a dataset.
   - predict: Make predictions using a trained decision tree.
+- *AdaBoost Functions*
+  - train_adaboost: Train an AdaBoost model on a dataset.
+  - predict: Make predicitions using a trained AdaBoost model
 
 """
 module BoostingDecisionTrees
