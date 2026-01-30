@@ -5,24 +5,37 @@
 # -------------------- Utility Functions --------------------
 
 """
-    majority_label(y)
+    majority_label(y::Vector{Int})
+    majority_label(y::Vector{String})
 
 Return the most common class label in `y`.
 
 # Arguments
-- `y::AbstractVector`: a collection of class labels.
+- `y::Vector{Int}`: a vector of integer class labels.
+- `y::Vector{String}`: a vector of string class labels (expected format: "label_<index>").
 
 # Returns
-- The label that appears most frequently in `y`. If there is a tie, one of the tied labels is returned.
+- For `Vector{Int}`: the integer label that appears most frequently.
+- For `Vector{String}`: the string label "label_<index>" that appears most frequently.
 """
-function majority_label(y)
-    counts = countmap(y)
-    max_label = nothing
-    max_count = -Inf
+#NOTE: Rewrote majority_label functions with suggestions from an LLM for better performance
+# based on profiler output.
+function majority_label(y::Vector{T}) where T
+    # Create a dictionary for counting (works for all hashable types T)
+    counts = Dict{T, Int}()
+    sizehint!(counts, length(unique(y)))  # Preallocate memory
+    
+    # Count the labels (with @inbounds for performance)
+    @inbounds for label in y
+        counts[label] = get(counts, label, 0) + 1
+    end
 
-    for (label, c) in counts
-        if c > max_count
-            max_count = c
+    # Find the label with the highest frequency
+    max_label = first(y)  # Default fallback
+    max_count = -1
+    for (label, count) in counts
+        if count > max_count
+            max_count = count
             max_label = label
         end
     end
@@ -146,29 +159,79 @@ end
 """
     predict(node::TreeNode, x)
 
-Predict the class label for a single sample.
+Make a prediction for a single sample `x` using the decision tree.
+
+# Arguments
+- `node::TreeNode`: a node in the decision tree.
+- `x::AbstractVector`: a single sample.
+
+# Returns
+- The predicted class label.
+
+# Examples
+```jldoctest
+julia> leaf = LeafNode("a");
+
+julia> predict(leaf, [1.0, 2.0])
+"a"
+```
 """
-function predict(node::TreeNode, x::AbstractVector)
-    if node isa LeafNode
-        return node.label
-    else
-        if x[node.feature] <= node.threshold
-            return predict(node.left, x)
+# NOTE: Using @inline here for performance and restructuring code to traverse
+# the tree using a while loop, was a suggestion made by an LLM in response
+# to the profiler output. 
+@inline function predict(node::TreeNode, x::AbstractVector)
+    current_node = node
+    while true
+        if current_node isa LeafNode
+            return current_node.label
         else
-            return predict(node.right, x)
+            if x[current_node.feature] <= current_node.threshold
+                current_node = current_node.left
+            else
+                current_node = current_node.right
+            end
         end
     end
 end
 
+
 """
     predict(tree::TreeNode, X::AbstractMatrix)
 
-Predict class labels for multiple samples.
+Make predictions for multiple samples using the decision tree.
+
+# Arguments
+- `tree::TreeNode`: a trained decision tree.
+- `X::AbstractMatrix`: rows are samples, columns are features.
+
+# Returns
+- `Vector{Any}`: predicted class labels for each sample in `X`.
+
+# Examples
+```jldoctest
+julia> tree = DecisionNode(1, 2.5, LeafNode("a"), LeafNode("b"));
+
+julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5];
+
+julia> preds = predict(tree, X)
+3-element Vector{Any}:
+ "a"
+ "b"
+ "a"
+```
 """
 function predict(tree::TreeNode, X::AbstractMatrix)
     n = size(X, 1)
-    preds = Vector{Any}(undef, n)
-    for i in 1:n
+    # extract type information from initial function call
+    first_prediction = predict(tree, X[1, :])
+    T = typeof(first_prediction)
+
+    preds = Vector{T}(undef, n)
+    preds[1] = first_prediction
+
+    # NOTE: Using @inbounds here for performance, was a suggestion made 
+    # by an LLM in response to the profiler output. 
+    @inbounds for i in 2:n
         preds[i] = predict(tree, X[i, :])
     end
     return preds
