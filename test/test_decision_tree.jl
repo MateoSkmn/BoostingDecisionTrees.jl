@@ -270,6 +270,18 @@ end
     @test preds == y
 end
 
+
+@testset "Gini no valid split" begin
+    X = [1.0 1.0]
+
+    y = [1]
+
+    tree = train_tree(X, y; criterion=:gini)
+
+    @test tree isa LeafNode
+    @test tree.label == 1  # majority label
+end
+
 @testset "mixed case: some features split, some don't" begin
     # One feature has variation, another doesn't
     X = [5.0  1.0;

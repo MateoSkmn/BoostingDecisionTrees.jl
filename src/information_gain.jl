@@ -72,11 +72,6 @@ function information_gain(X_column::AbstractVector{<:Real}, y::AbstractVector)
         left_idx  = findall(x -> x ≤ t, X_column)
         right_idx = findall(x -> x > t, X_column)
 
-        # Skip invalid splits
-        if isempty(left_idx) || isempty(right_idx)
-            continue
-        end
-
         y_left  = y[left_idx]
         y_right = y[right_idx]
 
