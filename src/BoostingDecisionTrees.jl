@@ -24,10 +24,10 @@ decision-tree learners.
 """
 module BoostingDecisionTrees
 
-using StatsBase: countmap
-using CSV
-using DataFrames
-using Random
+using StatsBase: countmap, sample, Weights
+using CSV: read
+using DataFrames: DataFrame, nrow
+using Random: shuffle
 
 include("gini_impurity.jl")
 include("information_gain.jl")
@@ -43,6 +43,8 @@ export
     predict,
     load_data_iris,
     AdaBoost,
-    train_adaboost
+    train_adaboost,
+    information_gain,
+    best_split
 
 end

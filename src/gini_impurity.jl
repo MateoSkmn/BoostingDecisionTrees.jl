@@ -49,9 +49,6 @@ function best_split(feature::AbstractVector{<:Real}, labels::AbstractVector)
     best_gini = Inf
     best_threshold = nothing
 
-    if n == 0
-        throw(ArgumentError("best_split received empty feature array"))
-    end
     if n != length(labels)
         throw(DimensionMismatch("feature and labels must have same length"))
     end

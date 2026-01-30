@@ -15,9 +15,6 @@
     threshold1, gain1 = information_gain(X[:, 1], y)
     threshold2, gain2 = information_gain(X[:, 2], y)
 
-    println("Feature 1: best threshold = ", threshold1, ", gain = ", gain1)
-    println("Feature 2: best threshold = ", threshold2, ", gain = ", gain2)
-
     # Pick the feature with the maximum gain
     if gain1 > gain2
         best_feature = 1
@@ -28,10 +25,6 @@
         best_threshold = threshold2
         best_gain = gain2
     end
-
-    println("Best feature index: ", best_feature)
-    println("Best threshold: ", best_threshold)
-    println("Best information gain: ", best_gain)
 
     @test best_feature == 1          
     @test best_gain > 0.0            

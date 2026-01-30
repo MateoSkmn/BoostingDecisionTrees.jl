@@ -25,9 +25,6 @@
     @test gini4 == 0.5 # Everything is on the same branch
 
     @testset "Function errors" begin
-        # Empty arrays
-        @test_throws ArgumentError best_split([],[])
-
         #Input has different lengths
         @test_throws DimensionMismatch best_split([1], [1,2])
     end

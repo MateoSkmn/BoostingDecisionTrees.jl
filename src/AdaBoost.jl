@@ -48,7 +48,7 @@ function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Int
         # Train a DecisionStump
         tree = train_tree(X, y; max_depth=max_depth)
         # Get total error of the DecisionStump
-        tree_prediction = predict_tree(tree, X)
+        tree_prediction = predict(tree, X)
         err = sum(tree_prediction .!= y) / size(y, 1)
         # Calculate alpha (Amount of say)
         # log(0) => -Inf || 1/0 => Inf
@@ -133,7 +133,7 @@ function predict(model::AdaBoost, X::AbstractMatrix)
     # Sum up votes from every tree
     for (tree, alpha) in zip(model.learners, model.alphas)
         for i in 1:n_samples
-            pred = predict_tree(tree, X[i, :])
+            pred = predict(tree, X[i, :])
             scores[pred][i] += alpha
         end
     end
