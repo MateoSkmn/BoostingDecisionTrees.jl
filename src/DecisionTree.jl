@@ -94,7 +94,6 @@ Train a decision tree using numeric threshold splits.
 - `y::AbstractVector`: class labels.
 - `max_depth::Int`: maximum tree depth.
 - `criterion::Symbol`: `:information_gain` or `:gini`.
-- `labelType::Vector{T}`: unique class labels.
 
 # Returns
 - `TreeNode`
@@ -182,7 +181,7 @@ Make a prediction for a single sample `x` using the decision tree.
 
 # Examples
 ```jldoctest
-julia> leaf = LeafNode("a");
+julia> leaf = LeafNode{String}("a");
 
 julia> predict(leaf, [1.0, 2.0])
 "a"
@@ -221,7 +220,7 @@ Make predictions for multiple samples using the decision tree.
 
 # Examples
 ```jldoctest
-julia> tree = DecisionNode(1, 2.5, LeafNode("a"), LeafNode("b"));
+julia> tree = DecisionNode{String}(1, 2.5, LeafNode("a"), LeafNode("b"), String);
 
 julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5];
 
