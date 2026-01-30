@@ -40,14 +40,6 @@ The decision tree supports two numeric splitting criteria:
 
 :information_gain — entropy-based information gain
 
-Both criteria:
-
-- use binary threshold splits (x ≤ t vs. x > t)
-
-- work exclusively with numerical features
-
-- produce fully binary trees
-
 ### AdaBoost
 AdaBoost is an ensemble learning classifier using multiple weaker learners. Each new learner focuses on correcting the errors made by its predicessors.
 You can train a model using your dataset. You may also adjust the maximum number of iterations as well as the maximum 'power' of a weaker learner.
