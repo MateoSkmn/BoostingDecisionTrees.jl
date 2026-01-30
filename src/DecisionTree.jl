@@ -144,7 +144,7 @@ end
 # -------------------- Prediction --------------------
 
 """
-    predict(node::TreeNode, x)
+    predict(node::TreeNode, x::AbstractVector)
 
 Predict the class label for a single sample.
 """
