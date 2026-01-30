@@ -5,9 +5,8 @@ A Julia module for decision tree and boosting algorithms, including decision stu
 and information gain utilities.
 
 # Overview
-This module provides tools for training and evaluating simple decision trees and decision stumps,
-with support for both Gini impurity and information gain as splitting criteria. It is designed for
-educational purposes and prototyping machine learning models.
+This module provides tools for training and evaluating simple decision trees,
+with support for both Gini impurity and information gain as splitting criteria. 
 
 # Features
 - *Splitting Criteria*: Supports both Gini impurity and information gain for feature selection.
@@ -17,10 +16,10 @@ educational purposes and prototyping machine learning models.
 - *Decision TreeNode Functions*:
   - train_tree: Train a decision tree on a dataset.
   - predict: Make predictions using a trained decision tree.
+- *AdaBoost Functions*
+  - train_adaboost: Train an AdaBoost model on a dataset.
+  - predict: Make predicitions using a trained AdaBoost model
 
-# Notes
-Intended as a compact educational toolkit and a foundation for experiments with boosting and small
-decision-tree learners.
 """
 module BoostingDecisionTrees
 
