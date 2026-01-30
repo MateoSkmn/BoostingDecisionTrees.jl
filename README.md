@@ -35,9 +35,9 @@ julia> sum(prediction .== y[101:150]) / length(y[101:150]) # Accuracy
 
 The decision tree supports two numeric splitting criteria:
 
-:gini — Gini impurity 
+:gini - Gini impurity 
 
-:information_gain — entropy-based information gain
+:information_gain - entropy-based information gain
 
 ### AdaBoost
 AdaBoost is an ensemble learning classifier using multiple weaker learners. Each new learner focuses on correcting the errors made by its predicessors.

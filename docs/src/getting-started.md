@@ -35,9 +35,9 @@ julia> sum(prediction .== y[101:150]) / length(y[101:150]) # Accuracy
 
 The decision tree supports two numeric splitting criteria:
 
-:gini — Gini impurity 
+:gini - Gini impurity 
 
-:information_gain — entropy-based information gain
+:information_gain - entropy-based information gain
 
 
 ### AdaBoost
