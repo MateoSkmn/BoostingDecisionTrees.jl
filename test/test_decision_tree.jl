@@ -212,7 +212,7 @@ end
     
     left_leaf = LeafNode("left")
     right_leaf = LeafNode("right")
-    tree = DecisionNode(1, 2.5, left_leaf, right_leaf)
+    tree = DecisionNode{String}(1, 2.5, left_leaf, right_leaf, String)
     
     # Test routing to left
     pred_left = predict(tree, [1.0, 10.0])  # feature 1 is 1.0, <= 2.5
@@ -239,8 +239,8 @@ end
     tree = train_tree(X, y; max_depth=5)
     preds = predict(tree, X)
 
-    # Should return Vector{Any}
-    @test isa(preds, Vector)
+    # Should return Vector{Int}
+    @test isa(preds, Vector{Int})
     @test length(preds) == size(X, 1)
 end
 
