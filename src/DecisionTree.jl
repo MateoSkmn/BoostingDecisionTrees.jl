@@ -122,10 +122,6 @@ function train_tree(X::AbstractMatrix, y::AbstractVector; max_depth::Int=5,crite
             end
         end
 
-        if best_feature == 0
-            return LeafNode(majority_label(y))
-        end
-
     else
         throw(ArgumentError("Unknown criterion: $criterion"))
     end
