@@ -20,17 +20,17 @@ end
 """
     train_adaboost(X, y; iterations, max_alpha)
 
-    Trains an AdaBoost classifier on the given dataset.
+Trains an AdaBoost classifier on the given dataset.
 
-    # Arguments
-    - `X::AbstractMatrix`: rows are samples, columns are features.
-    - `y::AbstractVector`: class labels for each sample.
-    - `iterations::Integer`: maximum number of weak learners. In case of perfect fit the training will be stopped early. Values must be in range [1, Inf). Default is 50.
-    - `max_alpha::Float64`: A threshold to cap the "amount of say" (alpha) for any single stump. Default is 2.5 which means an accuracy of >= 99.999%. The bigger the value the more of a 'dictator' becomes a stump with a perfect result.
-    - `max_depth::Integer`: Maximum depth of each tree. Default is set to 1 which is equivalent to a decision stump
+# Arguments
+- `X::AbstractMatrix`: rows are samples, columns are features.
+- `y::AbstractVector`: class labels for each sample.
+- `iterations::Integer`: maximum number of weak learners. In case of perfect fit the training will be stopped early. Values must be in range [1, Inf). Default is 50.
+- `max_alpha::Float64`: A threshold to cap the "amount of say" (alpha) for any single stump. Default is 2.5 which means an accuracy of >= 99.999%. The bigger the value the more of a 'dictator' becomes a stump with a perfect result.
+- `max_depth::Integer`: Maximum depth of each tree. Default is set to 1 which is equivalent to a decision stump
 
-    # Returns
-    - `AdaBoost`: a trained classifier with `learners` and `alphas`.
+# Returns
+- `AdaBoost`: a trained classifier with `learners` and `alphas`.
 """
 function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Integer = 50, max_alpha::Float64 = 2.5, max_depth::Integer=1, criterion::Symbol=:gini) where T
     if iterations < 1
@@ -86,17 +86,17 @@ end
 """
     createWeightedDataset(X, y, weights)
 
-    Create a new dataset by sampling rows from `X` and `y`, guided by a 
-    probability distribution defined by `weights` where samples with higher weights are more likely to be selected for the new dataset
+Create a new dataset by sampling rows from `X` and `y`, guided by a 
+probability distribution defined by `weights` where samples with higher weights are more likely to be selected for the new dataset
 
-    # Arguments
-    - `X::AbstractMatrix`: rows are samples, columns are features.
-    - `y::AbstractVector`: class labels for each sample.
-    - `weights::Vector{Float64}`: weight of each sample in the given dataset. The sum of all weights should be 1.
+# Arguments
+- `X::AbstractMatrix`: rows are samples, columns are features.
+- `y::AbstractVector`: class labels for each sample.
+- `weights::Vector{Float64}`: weight of each sample in the given dataset. The sum of all weights should be 1.
 
-    # Returns
-    - `X_prime`: A resampled matrix of the same dimensions and type as `X`.
-    - `y_prime`: A resampled vector of the same length and type as `y`.
+# Returns
+- `X_prime`: A resampled matrix of the same dimensions and type as `X`.
+- `y_prime`: A resampled vector of the same length and type as `y`.
 """
 function createWeightedDataset(X::AbstractMatrix, y::AbstractVector, weights::Vector{Float64})
     n_samples = size(X, 1)
