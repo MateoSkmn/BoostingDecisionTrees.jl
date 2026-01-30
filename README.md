@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/MateoSkmn/BoostingDecisionTrees.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/MateoSkmn/BoostingDecisionTrees.jl/actions/workflows/CI.yml?query=branch%3Amaster)
 [![Coverage](https://codecov.io/gh/MateoSkmn/BoostingDecisionTrees.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/MateoSkmn/BoostingDecisionTrees.jl)
 
-This project demonstrates how different tree based models handle multiclass classification using the Iris Dataset. By comparing a single split (stump) to a full tree and an adaptive ensemble (AdaBoost), we can show the "power" of each approach.
+This project demonstrates how different tree based models handle multiclass classification using the Iris Dataset. By comparing a generic decision tree and an adaptive ensemble (AdaBoost), we can show the "power" of each approach.
 
 # Running the package
 To use this package, open a Julia REPL and run:
@@ -12,7 +12,6 @@ pkg> add https://github.com/MateoSkmn/BoostingDecisionTrees.jl
 
 julia> using BoostingDecisionTrees
 ```
-
 
 # Examples
 ### Load dataset
