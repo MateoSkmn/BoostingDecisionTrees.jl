@@ -239,8 +239,8 @@ end
     tree = train_tree(X, y; max_depth=5)
     preds = predict(tree, X)
 
-    # Should return Vector{Any}
-    @test isa(preds, Vector)
+    # Should return Vector{Int}
+    @test isa(preds, Vector{Int})
     @test length(preds) == size(X, 1)
 end
 

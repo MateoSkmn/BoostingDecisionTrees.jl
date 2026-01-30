@@ -225,7 +225,7 @@ julia> tree = DecisionNode{String}(1, 2.5, LeafNode("a"), LeafNode("b"), String)
 julia> X = [1.0 2.0; 3.0 0.5; 2.0 1.5];
 
 julia> preds = predict(tree, X)
-3-element Vector{Any}:
+3-element Vector{String}:
  "a"
  "b"
  "a"
