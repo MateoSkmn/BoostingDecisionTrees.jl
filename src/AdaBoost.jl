@@ -32,7 +32,7 @@ end
     # Returns
     - `AdaBoost`: a trained classifier with `learners` and `alphas`.
 """
-function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Integer = 50, max_alpha::Float64 = 2.5, max_depth::Integer=1) where T
+function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Integer = 50, max_alpha::Float64 = 2.5, max_depth::Integer=1, criterion::Symbol=:gini) where T
     if iterations < 1
         throw(ArgumentError("iterations must be at least 1" ))
     end
@@ -46,9 +46,9 @@ function train_adaboost(X::AbstractMatrix, y::AbstractVector{T}; iterations::Int
 
     for i in 1:iterations
         # Train a DecisionStump
-        tree = train_tree(X, y; max_depth=max_depth)
+        tree = train_tree(X, y; max_depth=max_depth, criterion=criterion)
         # Get total error of the DecisionStump
-        tree_prediction = predict_tree(tree, X)
+        tree_prediction = predict(tree, X)
         err = sum(tree_prediction .!= y) / size(y, 1)
         # Calculate alpha (Amount of say)
         # log(0) => -Inf || 1/0 => Inf
@@ -133,7 +133,7 @@ function predict(model::AdaBoost, X::AbstractMatrix)
     # Sum up votes from every tree
     for (tree, alpha) in zip(model.learners, model.alphas)
         for i in 1:n_samples
-            pred = predict_tree(tree, X[i, :])
+            pred = predict(tree, X[i, :])
             scores[pred][i] += alpha
         end
     end

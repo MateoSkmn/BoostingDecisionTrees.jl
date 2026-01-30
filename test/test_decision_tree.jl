@@ -19,11 +19,10 @@
         @test tree.threshold isa Float64
         @test tree.left isa TreeNode
         @test tree.right isa TreeNode
-    end
 end
 
 
-@testset "predict_tree on training data" begin
+@testset "predict on training data" begin
     X = [1  2;
          2  3;
          3  4;
@@ -34,7 +33,7 @@ end
     y = [0, 0, 0, 1, 1, 1]
 
     tree = train_tree(X, y; max_depth=5)
-    preds = predict_tree(tree, X)
+    preds = predict(tree, X)
 
     @test preds == y
     @test length(preds) == length(y)
@@ -42,7 +41,7 @@ end
 end
 
 
-@testset "predict_tree single sample" begin
+@testset "predict single sample" begin
     X = [1  2;
          2  3;
          3  4;
@@ -55,15 +54,15 @@ end
     tree = train_tree(X, y; max_depth=5)
     
     # Test single sample prediction
-    pred_single = predict_tree(tree, [1.0, 2.0])
+    pred_single = predict(tree, [1.0, 2.0])
     @test pred_single == 0
     
-    pred_single2 = predict_tree(tree, [10.0, 20.0])
+    pred_single2 = predict(tree, [10.0, 20.0])
     @test pred_single2 == 1
 end
 
 
-@testset "predict_tree on matrix with single sample" begin
+@testset "predict on matrix with single sample" begin
     X = [1  2;
          2  3;
          3  4;
@@ -77,7 +76,7 @@ end
     
     # Single sample as 1x2 matrix
     X_single = reshape([1.0, 2.0], 1, 2)
-    preds = predict_tree(tree, X_single)
+    preds = predict(tree, X_single)
     
     @test length(preds) == 1
     @test preds[1] == 0
@@ -95,7 +94,7 @@ end
     @test tree.label == 1
 
     # Predictions should always return the same label
-    preds = predict_tree(tree, X)
+    preds = predict(tree, X)
     @test preds == [1]
 end
 
@@ -112,7 +111,7 @@ end
     @test tree isa LeafNode
     @test tree.label == 0
 
-    preds = predict_tree(tree, X)
+    preds = predict(tree, X)
     @test preds == [0, 0, 0]
 end
 
@@ -170,7 +169,7 @@ end
     y = ["a", "a", "a", "b", "b", "b"]
 
     tree = train_tree(X, y; max_depth=5)
-    preds = predict_tree(tree, X)
+    preds = predict(tree, X)
 
     @test preds == y
     @test all(p in ["a", "b"] for p in preds)
@@ -188,7 +187,7 @@ end
     y = [0, 0, 0, 1, 1, 1]
 
     tree = train_tree(X, y; max_depth=5)
-    preds = predict_tree(tree, X)
+    preds = predict(tree, X)
 
     @test preds == y
 end
@@ -199,7 +198,7 @@ end
     leaf = LeafNode("test_label")
     
     x_sample = [1.0, 2.0, 3.0]
-    pred = predict_tree(leaf, x_sample)
+    pred = predict(leaf, x_sample)
     
     @test pred == "test_label"
 end
@@ -216,20 +215,20 @@ end
     tree = DecisionNode(1, 2.5, left_leaf, right_leaf)
     
     # Test routing to left
-    pred_left = predict_tree(tree, [1.0, 10.0])  # feature 1 is 1.0, <= 2.5
+    pred_left = predict(tree, [1.0, 10.0])  # feature 1 is 1.0, <= 2.5
     @test pred_left == "left"
     
     # Test routing to right
-    pred_right = predict_tree(tree, [3.0, 10.0])  # feature 1 is 3.0, > 2.5
+    pred_right = predict(tree, [3.0, 10.0])  # feature 1 is 3.0, > 2.5
     @test pred_right == "right"
     
     # Test boundary
-    pred_boundary = predict_tree(tree, [2.5, 10.0])  # feature 1 is 2.5, <= 2.5
+    pred_boundary = predict(tree, [2.5, 10.0])  # feature 1 is 2.5, <= 2.5
     @test pred_boundary == "left"
 end
 
 
-@testset "predict_tree output type" begin
+@testset "predict output type" begin
     X = [1  2;
          2  3;
          10 20;
@@ -238,7 +237,7 @@ end
     y = [0, 0, 1, 1]
 
     tree = train_tree(X, y; max_depth=5)
-    preds = predict_tree(tree, X)
+    preds = predict(tree, X)
 
     # Should return Vector{Any}
     @test isa(preds, Vector)
@@ -267,10 +266,21 @@ end
     @test tree.left isa LeafNode
     @test tree.right isa LeafNode
 
-    preds = predict_tree(tree, X)
+    preds = predict(tree, X)
     @test preds == y
 end
 
+
+@testset "Gini no valid split" begin
+    X = [1.0 1.0]
+
+    y = [1]
+
+    tree = train_tree(X, y; criterion=:gini)
+
+    @test tree isa LeafNode
+    @test tree.label == 1  # majority label
+end
 
 @testset "mixed case: some features split, some don't" begin
     # One feature has variation, another doesn't
@@ -290,6 +300,55 @@ end
     @test tree isa DecisionNode
     @test tree.feature == 2
 
-    preds = predict_tree(tree, X)
+    preds = predict(tree, X)
     @test preds == y
+end
+
+@testset "use information gain criterion" begin
+    X = [1  2;
+         2  3;
+         3  4;
+         10 20;
+         11 21;
+         12 22]
+
+    y = [0, 0, 0, 1, 1, 1]
+
+    tree = train_tree(X, y; max_depth=5,criterion=:information_gain)
+    preds = predict(tree, X)
+
+    @test preds == y
+    @test length(preds) == length(y)
+    @test all(p in [0, 1] for p in preds)
+end
+    
+@testset "information gain score < 0" begin
+    # This happens when we recursively split and get data where all values are identical
+    # Use data that creates a split, then one side becomes constant
+    X = [1.0  1.0;
+         1.0  1.0;
+         1.0  1.0;
+         1.0  1.0]
+
+    y = [0, 0, 1, 1]
+ 
+    tree = train_tree(X, y; max_depth=5, criterion=:information_gain)
+
+    # Should successfully split initially since we have variation
+    @test tree isa LeafNode
+end
+
+@testset "unknown criterion" begin
+    X = [1  2;
+         2  3;
+         3  4;
+         10 20;
+         11 21;
+         12 22]
+
+    y = [0, 0, 0, 1, 1, 1]
+
+    @test_throws ArgumentError train_tree(X, y; max_depth=5,criterion=:unknown)
+end
+
 end

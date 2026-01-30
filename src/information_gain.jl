@@ -1,17 +1,20 @@
-# --- Code for Information Gain --- #
+# AI Note:
+# Parts of the in-file documentation such as docstrings and code comments are based on AI suggestions
+# AI was used to suggest performance and structural improvements and suggestions were taken into account when finalizing the module
 
 """
-    entropy(y::Vector)
+    entropy(y::AbstractVector)
 
-Compute the entropy of a vector of class labels.
+Compute the entropy of a AbstractVector of class labels.
 
 # Arguments
-- `y::Vector`: A vector of class labels.
+- `y::AbstractVector`: A AbstractVector of class labels.
 
 # Returns
-- `Float64`: The entropy of the input vector.
+- `Float64`: The entropy of the input AbstractVector.
 """
-function entropy(y::Vector)
+
+function entropy(y::AbstractVector)
     # Total number of samples
     n = length(y)
 
@@ -37,97 +40,51 @@ function entropy(y::Vector)
 end
 
 """
-    information_gain(X_column::Vector, y::Vector)
+    information_gain(X_column::AbstractVector{<:Real}, y::AbstractVector)
 
-Compute the information gain obtained by splitting on a feature column. This calculates
-how helpful a selector is by comparing entropy of a feature before and after applying it.
-
-# Arguments
-- `X_column::Vector`: A vector of feature values.
-- `y::Vector`: A vector of class labels, with the same length as `X_column`.
+Compute the best information gain obtainable by splitting a numeric feature column
+using a threshold (x ≤ t vs. x > t).
 
 # Returns
-- `Float64`: The information gain from splitting on the feature column.
+- `best_threshold::Float64`: threshold yielding maximum information gain
+- `best_gain::Float64`: corresponding information gain
 """
-function information_gain(X_column::Vector, y::Vector)
-    # Compute entropy BEFORE the split (parent node)
+function information_gain(X_column::AbstractVector{<:Real}, y::AbstractVector)
+
+    n = length(y)
+    n == 0 && return (0.0, 0.0)
+
     parent_entropy = entropy(y)
 
-    # Total number of samples
-    n = length(y)
+    # Sort unique feature values
+    values = sort(unique(X_column))
 
-    # Find all unique values in this feature
-    feature_values = unique(X_column)
+    # No split possible if only one unique value
+    length(values) ≤ 1 && return (0.0, 0.0)
 
-    # Initialize weighted entropy after the split
-    weighted_entropy = 0.0
-
-    # Iterate over each unique feature value
-    for v in feature_values
-        # Find indices where feature equals v
-        indices = findall(x -> x == v, X_column)
-
-        # Extract corresponding labels for this split
-        y_subset = y[indices]
-
-        # Weight = proportion of samples in this subset
-        weight = length(y_subset) / n
-
-        # Add weighted entropy for this subset
-        weighted_entropy += weight * entropy(y_subset)
-    end
-
-    # Information Gain = Parent Entropy - Weighted Child Entropy
-    return parent_entropy - weighted_entropy
-end
-
-"""
-    best_split_information_gain(X::Matrix, y::Vector)
-
-Find the feature index that yields the highest information gain.
-
-# Arguments
-`X::Matrix`: A matrix where each column is a feature and each row is a sample.
-`y::Vector`: A vector of class labels, with the same number of rows as X.
-
-# Returns
-`best_feature::Int`: The index of the feature with the highest information gain.
-`best_gain::Float64`: The highest information gain value found.
-
-# Examples
-```jldoctest
-julia> X = [1 1; 1 2; 2 1; 2 2];
-
-julia> y = ["a", "a", "b", "b"];
-
-julia> best_split_information_gain(X, y)
-(1, 1.0)
-```
-"""
-function best_split_information_gain(X::Matrix, y::Vector)
-    # Number of features (columns)
-    num_features = size(X, 2)
-
-    # Store the best gain found
     best_gain = -Inf
+    best_threshold = values[1]  # default (won't be used if gain ≤ 0)
 
-    # Store index of best feature
-    best_feature = -1
+    # Candidate thresholds: midpoints between consecutive values
+    for i in 1:length(values)-1
+        t = (values[i] + values[i + 1]) / 2
 
-    # Loop over each feature column
-    for feature_idx in 1:num_features
-        # Extract column as vector
-        X_column = X[:, feature_idx]
+        left_idx  = findall(x -> x ≤ t, X_column)
+        right_idx = findall(x -> x > t, X_column)
 
-        # Compute information gain for this feature
-        gain = information_gain(X_column, y)
+        y_left  = y[left_idx]
+        y_right = y[right_idx]
 
-        # Update best feature if this gain is higher
+        weighted_entropy =
+            (length(y_left)  / n) * entropy(y_left) + (length(y_right) / n) * entropy(y_right)
+
+        gain = parent_entropy - weighted_entropy
+
         if gain > best_gain
             best_gain = gain
-            best_feature = feature_idx
+            best_threshold = t
         end
     end
 
-    return best_feature, best_gain
+    return best_threshold, best_gain
 end
