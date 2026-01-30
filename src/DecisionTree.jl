@@ -8,7 +8,8 @@
     majority_label(y::Vector{Int})
     majority_label(y::Vector{String})
 
-Return the most common class label in `y`.
+Return the most common class label in `y`. If labels are equally common,
+return first one of them.
 
 # Arguments
 - `y::Vector{Int}`: a vector of integer class labels.
@@ -63,11 +64,13 @@ A decision node in a decision tree that splits data based on a feature and thres
 - `left::TreeNode`: the left subtree (samples where feature ≤ threshold).
 - `right::TreeNode`: the right subtree (samples where feature > threshold).
 """
-struct DecisionNode <: TreeNode
+struct DecisionNode{T} <: TreeNode
     feature::Int
     threshold::Float64
     left::TreeNode
     right::TreeNode
+    labelType::Type{T}
+    # NOTE: storing type explicitly makes runtime type access faster 
 end
 
 """
@@ -75,8 +78,8 @@ end
 
 A leaf node holding a predicted class label.
 """
-struct LeafNode <: TreeNode
-    label
+struct LeafNode{T} <: TreeNode
+    label::T
 end
 
 # -------------------- Training --------------------
@@ -91,13 +94,22 @@ Train a decision tree using numeric threshold splits.
 - `y::AbstractVector`: class labels.
 - `max_depth::Int`: maximum tree depth.
 - `criterion::Symbol`: `:information_gain` or `:gini`.
+- `labelType::Vector{T}`: unique class labels.
 
 # Returns
 - `TreeNode`
 """
-function train_tree(X::AbstractMatrix, y::AbstractVector; max_depth::Int=5,criterion::Symbol=:gini)
+function train_tree(
+    X::AbstractMatrix,
+    y::AbstractVector;
+    max_depth::Int=5,
+    criterion::Symbol=:gini,
+    )
 
     n_samples, n_features = size(X)
+    
+    # Capture the label type
+    label_type = eltype(y)
 
     # Stopping conditions
     if n_samples == 0 || length(unique(y)) == 1 || max_depth <= 0
@@ -150,8 +162,8 @@ function train_tree(X::AbstractMatrix, y::AbstractVector; max_depth::Int=5,crite
                                max_depth=max_depth - 1,
                                criterion=criterion)
 
-    return DecisionNode(best_feature, best_threshold,
-                        left_subtree, right_subtree)
+    return DecisionNode{label_type}(best_feature, best_threshold,
+                                     left_subtree, right_subtree, label_type)
 end
 
 # -------------------- Prediction --------------------
@@ -222,16 +234,20 @@ julia> preds = predict(tree, X)
 """
 function predict(tree::TreeNode, X::AbstractMatrix)
     n = size(X, 1)
-    # extract type information from initial function call
-    first_prediction = predict(tree, X[1, :])
-    T = typeof(first_prediction)
+    
+    # Extract type information from the DecisionNode
+    T = if tree isa DecisionNode
+        tree.labelType
+    else
+        # Fallback for LeafNode
+        typeof(tree.label)
+    end
 
     preds = Vector{T}(undef, n)
-    preds[1] = first_prediction
 
     # NOTE: Using @inbounds here for performance, was a suggestion made 
     # by an LLM in response to the profiler output. 
-    @inbounds for i in 2:n
+    @inbounds for i in 1:n
         preds[i] = predict(tree, X[i, :])
     end
     return preds

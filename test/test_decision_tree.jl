@@ -212,7 +212,7 @@ end
     
     left_leaf = LeafNode("left")
     right_leaf = LeafNode("right")
-    tree = DecisionNode(1, 2.5, left_leaf, right_leaf)
+    tree = DecisionNode{String}(1, 2.5, left_leaf, right_leaf, String)
     
     # Test routing to left
     pred_left = predict(tree, [1.0, 10.0])  # feature 1 is 1.0, <= 2.5
