@@ -19,7 +19,6 @@
         @test tree.threshold isa Float64
         @test tree.left isa TreeNode
         @test tree.right isa TreeNode
-    end
 end
 
 
@@ -271,7 +270,6 @@ end
     @test preds == y
 end
 
-
 @testset "mixed case: some features split, some don't" begin
     # One feature has variation, another doesn't
     X = [5.0  1.0;
@@ -292,4 +290,53 @@ end
 
     preds = predict(tree, X)
     @test preds == y
+end
+
+@testset "use information gain criterion" begin
+    X = [1  2;
+         2  3;
+         3  4;
+         10 20;
+         11 21;
+         12 22]
+
+    y = [0, 0, 0, 1, 1, 1]
+
+    tree = train_tree(X, y; max_depth=5,criterion=:information_gain)
+    preds = predict(tree, X)
+
+    @test preds == y
+    @test length(preds) == length(y)
+    @test all(p in [0, 1] for p in preds)
+end
+    
+@testset "information gain score < 0" begin
+    # This happens when we recursively split and get data where all values are identical
+    # Use data that creates a split, then one side becomes constant
+    X = [1.0  1.0;
+         1.0  1.0;
+         1.0  1.0;
+         1.0  1.0]
+
+    y = [0, 0, 1, 1]
+ 
+    tree = train_tree(X, y; max_depth=5, criterion=:information_gain)
+
+    # Should successfully split initially since we have variation
+    @test tree isa LeafNode
+end
+
+@testset "unknown criterion" begin
+    X = [1  2;
+         2  3;
+         3  4;
+         10 20;
+         11 21;
+         12 22]
+
+    y = [0, 0, 0, 1, 1, 1]
+
+    @test_throws ArgumentError train_tree(X, y; max_depth=5,criterion=:unknown)
+end
+
 end
