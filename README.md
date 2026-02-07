@@ -47,7 +47,7 @@ julia> ada = train_adaboost(X[1:100, :], y[1:100]; iterations=50, max_alpha=2.5)
 
 julia> ada2 = train_adaboost(X[1:100, :], y[1:100]) # This will use the same parameters as the code above
 
-julia> prediciton = predict(ada, X[101:150, :])
+julia> prediction = predict(ada, X[101:150, :])
 
-julia> sum(prediciton .== y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
+julia> sum(prediction .== y[101:150]) / size(y[101:150], 1) # Accuracy of the created model
 ```
